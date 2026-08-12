@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gender Classification - Predict Gender from Name</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Gender Classification</h1>
+            <p class="subtitle">Enter a name to predict if it's typically associated with Male or Female</p>
+        </div>
+
+        <div class="card">
+            <form method="POST" action="/predict" class="form">
+                <div class="form-group">
+                    <label for="name_query">Enter Name:</label>
+                    <input 
+                        type="text" 
+                        id="name_query" 
+                        name="name_query" 
+                        placeholder="e.g., Suchitra, Chandu, Natasha..." 
+                        required 
+                        autocomplete="off"
+                        class="input-field"
+                    >
+                </div>
+                <button type="submit" class="btn-predict">
+                    🎯 Predict Gender
+                </button>
+            </form>
+
+            <div class="info-box">
+                <h3>💡 How it works:</h3>
+                <ul>
+                    <li>This AI model analyzes character patterns in names</li>
+                    <li>Trained on a large dataset of male and female names</li>
+                    <li>Uses Machine Learning to make predictions</li>
+                    <li>Works best with common first names</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built with Flask & Machine Learning | Gender Classification Model</p>
+        </div>
+    </div>
+</body>
+</html>
