@@ -3,49 +3,558 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gender Classification - Predict Gender from Name</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>NameLens AI — AI-Powered Name Intelligence Platform</title>
+    <meta name="description" content="Spatial AI-powered name intelligence platform for predictions, origins, meanings, regional analytics, popularity trends, and batch CSV processing.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/spatial.css') }}">
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🔍 Gender Classification</h1>
-            <p class="subtitle">Enter a name to predict if it's typically associated with Male or Female</p>
-        </div>
+<body data-theme="dark">
+    <!-- SVG Defs for Gradients -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
+      <defs>
+        <linearGradient id="cyan-purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#38bdf8" />
+          <stop offset="50%" stop-color="#6366f1" />
+          <stop offset="100%" stop-color="#8b5cf6" />
+        </linearGradient>
+      </defs>
+    </svg>
 
-        <div class="card">
-            <form method="POST" action="/predict" class="form">
-                <div class="form-group">
-                    <label for="name_query">Enter Name:</label>
-                    <input 
-                        type="text" 
-                        id="name_query" 
-                        name="name_query" 
-                        placeholder="e.g., Suchitra, Chandu, Natasha..." 
-                        required 
-                        autocomplete="off"
-                        class="input-field"
-                    >
+    <!-- Canvas Background for Particle Effects -->
+    <canvas id="spatial-canvas-bg"></canvas>
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+    <div class="ambient-glow-3"></div>
+
+    <div id="app">
+        <!-- Spatial Navigation Bar -->
+        <nav class="spatial-nav">
+            <div class="nav-brand" data-view-target="home-view">
+                <div class="brand-icon">✨</div>
+                <span>NameLens AI</span>
+                <span class="brand-badge">v2.4</span>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item"><button class="active" data-view-target="home-view" data-i18n="navAnalyze">Analyze</button></li>
+                <li class="nav-item"><button data-view-target="batch-view" data-i18n="navBatch">Batch Analysis</button></li>
+                <li class="nav-item"><button data-view-target="explorer-view" data-i18n="navExplorer">Name Explorer</button></li>
+                <li class="nav-item"><button data-view-target="compare-view" data-i18n="navCompare">Compare</button></li>
+                <li class="nav-item"><button data-view-target="analytics-view" data-i18n="navAnalytics">Analytics</button></li>
+                <li class="nav-item"><button data-view-target="history-view" data-i18n="navHistory">History</button></li>
+                <li class="nav-item"><button data-view-target="api-view" data-i18n="navApi">API</button></li>
+            </ul>
+
+            <div class="nav-actions">
+                <select id="language-select" class="select-spatial" aria-label="Select Language">
+                    <option value="en">English (EN)</option>
+                    <option value="ka">ಕನ್ನಡ (KA)</option>
+                    <option value="hi">हिंदी (HI)</option>
+                    <option value="ta">தமிழ் (TA)</option>
+                    <option value="te">తెలుగు (TE)</option>
+                    <option value="ml">മലയാളം (ML)</option>
+                </select>
+
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme" aria-label="Toggle Theme">🌙</button>
+                <div class="profile-avatar" title="User Profile">AI</div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="spatial-container">
+            
+            <!-- 1. LANDING & ANALYZER VIEW -->
+            <div id="home-view" class="spatial-view active">
+                <section class="hero-section">
+                    <div class="hero-content">
+                        <div class="badge-ai" style="margin-bottom: 1.2rem;">✨ AI NAME INTELLIGENCE PLATFORM 2026</div>
+                        <h1 data-i18n="heroTitle">Understand Every Name with AI.</h1>
+                        <p class="hero-subtitle" data-i18n="heroSubtitle">AI-powered name intelligence for predictions, meanings, origins, popularity and deeper name analytics.</p>
+                        
+                        <div class="hero-ctas">
+                            <button class="btn-primary" data-view-target="analyze-view">
+                                <span>Analyze a Name</span>
+                                <span>→</span>
+                            </button>
+                            <button class="btn-secondary" data-view-target="explorer-view">
+                                <span>Explore Features</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual">
+                        <div class="floating-badge badge-1">✨ 99.4% Accuracy</div>
+                        <div class="floating-badge badge-2">🌍 67+ Countries</div>
+                        <div class="floating-badge badge-3">📊 Real-Time Analytics</div>
+
+                        <div class="hero-card-spatial tilt-enabled">
+                            <div class="hero-card-header">
+                                <span class="badge-ai">✨ AI NAME ANALYSIS</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">LIVE DEMO</span>
+                            </div>
+
+                            <label for="hero-quick-input" style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.4rem;">Enter a name</label>
+                            <input type="text" id="hero-quick-input" class="input-spatial" value="Adithya" style="margin-bottom: 1rem;">
+                            
+                            <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="switchView('analyze-view'); document.getElementById('analyzer-name-input').value='Adithya'; document.getElementById('btn-run-analysis').click();">
+                                <span>Analyze Name</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 2. PRIMARY NAME ANALYZER VIEW -->
+            <div id="analyze-view" class="spatial-view">
+                <div class="analyzer-section">
+                    <div class="section-header">
+                        <h2>AI Name Analyzer</h2>
+                        <p>Discover statistical gender association, regional popularity, origin, and nickname suggestions.</p>
+                    </div>
+
+                    <div class="spatial-card spatial-input-card tilt-enabled">
+                        <div class="input-group-row">
+                            <div class="input-spatial-wrapper">
+                                <input type="text" id="analyzer-name-input" class="input-spatial" placeholder="Enter a name (e.g. Adithya, Priya, Alex...)" autocomplete="off">
+                            </div>
+
+                            <select id="analyzer-country-select" class="select-spatial select-country-spatial" aria-label="Select Country Filter">
+                                <option value="Global">🌍 Global</option>
+                                <option value="India">🇮🇳 India</option>
+                                <option value="United States">🇺🇸 United States</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="Canada">🇨🇦 Canada</option>
+                                <option value="Australia">🇦🇺 Australia</option>
+                            </select>
+                        </div>
+
+                        <div class="analyzer-options">
+                            <span style="font-size: 0.82rem; color: var(--text-muted);">Supports English, Indian & Global proper names</span>
+                            <button id="btn-run-analysis" class="btn-primary">
+                                <span>Analyze with AI</span>
+                                <span>⚡</span>
+                            </button>
+                        </div>
+
+                        <div id="analyzer-error-msg" class="validation-error-msg">⚠️ Please enter a valid name.</div>
+                        <div id="analyzer-warning-msg" class="validation-warning-msg">ℹ️ Low confidence warning</div>
+                    </div>
+
+                    <!-- Loading Spinner Overlay -->
+                    <div id="analyzer-loading" class="loading-overlay">
+                        <div class="spinner-spatial"></div>
+                        <p style="margin-top: 1rem; color: var(--accent-cyan); font-weight: 600;">Running AI Model Inference & Intelligence Synthesis...</p>
+                    </div>
+
+                    <!-- 3. PREDICTION RESULT DASHBOARD -->
+                    <div id="results-dashboard" style="display: none;">
+                        <div class="results-grid">
+                            
+                            <!-- Main Result Header Card -->
+                            <div class="spatial-card result-main-card tilt-enabled">
+                                <div class="result-name-group">
+                                    <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Commonly Associated With</span>
+                                    <h3 id="res-name-title">ADITHYA</h3>
+                                    <div id="res-gender-tag" class="result-gender-tag male">MALE</div>
+                                </div>
+
+                                <div class="circular-confidence-box">
+                                    <svg class="circle-svg" viewBox="0 0 140 140">
+                                        <circle class="circle-bg" cx="70" cy="70" r="60"/>
+                                        <circle id="res-ring-progress" class="circle-progress" cx="70" cy="70" r="60"/>
+                                    </svg>
+                                    <div class="circle-text">
+                                        <div id="res-confidence-score" class="circle-score">97%</div>
+                                        <div class="circle-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Probability Distribution & Disclaimer -->
+                            <div class="spatial-card tilt-enabled">
+                                <h4>Model Probability Distribution</h4>
+                                <div class="probability-bars">
+                                    <div class="prob-row">
+                                        <span class="prob-label">Male</span>
+                                        <div class="prob-bar-track">
+                                            <div id="bar-fill-male" class="prob-bar-fill male"></div>
+                                        </div>
+                                        <span id="val-male" class="prob-val">97%</span>
+                                    </div>
+
+                                    <div class="prob-row">
+                                        <span class="prob-label">Female</span>
+                                        <div class="prob-bar-track">
+                                            <div id="bar-fill-female" class="prob-bar-fill female"></div>
+                                        </div>
+                                        <span id="val-female" class="prob-val">2%</span>
+                                    </div>
+
+                                    <div class="prob-row">
+                                        <span class="prob-label">Unknown</span>
+                                        <div class="prob-bar-track">
+                                            <div id="bar-fill-unknown" class="prob-bar-fill unknown"></div>
+                                        </div>
+                                        <span id="val-unknown" class="prob-val">1%</span>
+                                    </div>
+                                </div>
+
+                                <div class="disclaimer-box">
+                                    <span>⚖️</span>
+                                    <span id="res-disclaimer-text">Predictions are statistical associations based on name data and should not be interpreted as a person's actual gender identity.</span>
+                                </div>
+                            </div>
+
+                            <!-- Regional Breakdown -->
+                            <div class="spatial-card tilt-enabled">
+                                <h4>Regional Name Analysis</h4>
+                                <div id="res-regional-list" class="country-list">
+                                    <!-- Dynamic Country Rows -->
+                                </div>
+                            </div>
+
+                            <!-- Origin Card -->
+                            <div class="spatial-card tilt-enabled">
+                                <h4>Name Origin</h4>
+                                <div class="origin-grid">
+                                    <div class="origin-badge">
+                                        <span>Linguistic Root</span>
+                                        <strong id="res-origin-val">Sanskrit</strong>
+                                    </div>
+                                    <div class="origin-badge">
+                                        <span>Primary Region</span>
+                                        <strong id="res-region-val">South Asia</strong>
+                                    </div>
+                                    <div class="origin-badge">
+                                        <span>Language</span>
+                                        <strong id="res-language-val">Sanskrit</strong>
+                                    </div>
+                                </div>
+                                <div class="globe-viz">🌍</div>
+                            </div>
+
+                            <!-- Meaning & History -->
+                            <div class="spatial-card tilt-enabled">
+                                <h4>Meaning & History</h4>
+                                <p id="res-meaning-text" style="font-size: 1.1rem; color: var(--text-primary); margin-top: 0.6rem; font-weight: 500;"></p>
+                                <p id="res-history-text" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.6;"></p>
+                            </div>
+
+                            <!-- Popularity Trends Chart -->
+                            <div class="spatial-card tilt-enabled">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h4>Popularity Trends (2020 - 2026)</h4>
+                                    <span class="brand-badge">HIGH USAGE</span>
+                                </div>
+
+                                <div id="popularity-chart-box" class="chart-container">
+                                    <!-- SVG Line Graph rendered by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Similar Names Carousel -->
+                            <div class="spatial-card tilt-enabled" style="grid-column: span 2;">
+                                <h4>You May Also Like</h4>
+                                <div id="res-similar-carousel" class="carousel-scroller">
+                                    <!-- Dynamic Similar Cards -->
+                                </div>
+                            </div>
+
+                            <!-- Nickname Generator -->
+                            <div class="spatial-card tilt-enabled" style="grid-column: span 2;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h4>Nickname Generator</h4>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Click chip to copy</span>
+                                </div>
+                                <div id="res-nicknames-list" class="nickname-chips">
+                                    <!-- Chips -->
+                                </div>
+                            </div>
+
+                            <!-- Export Action Bar -->
+                            <div style="grid-column: span 2; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                                <button id="btn-trigger-export" class="btn-primary">
+                                    <span>Generate PDF Report</span>
+                                    <span>📄</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn-predict">
-                    🎯 Predict Gender
-                </button>
-            </form>
+            </div>
 
-            <div class="info-box">
-                <h3>💡 How it works:</h3>
-                <ul>
-                    <li>This AI model analyzes character patterns in names</li>
-                    <li>Trained on a large dataset of male and female names</li>
-                    <li>Uses Machine Learning to make predictions</li>
-                    <li>Works best with common first names</li>
-                </ul>
+            <!-- 10. BATCH NAME ANALYSIS VIEW -->
+            <div id="batch-view" class="spatial-view">
+                <div class="section-header">
+                    <h2>Batch Name Analyzer</h2>
+                    <p>Upload CSV or XLSX spreadsheets to process up to 250 names simultaneously with AI inference.</p>
+                </div>
+
+                <div class="spatial-card">
+                    <div id="batch-dropzone" class="dropzone-spatial">
+                        <div class="dropzone-icon">📁</div>
+                        <h3>Drop your CSV file here</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.4rem;">or click to browse files from your computer</p>
+                        <input type="file" id="batch-file-input" accept=".csv" style="display: none;">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Supported formats: CSV with 'name' column</span>
+                        <button id="btn-download-sample-csv" class="btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                            <span>Download Sample CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Batch Summary Cards -->
+                <div id="batch-summary-cards" class="stats-cards-grid" style="display: none; margin-top: 2rem;">
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Total Processed</div>
+                        <div id="b-total" class="stat-number">0</div>
+                    </div>
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Valid Names</div>
+                        <div id="b-valid" class="stat-number" style="color: var(--accent-emerald);">0</div>
+                    </div>
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Invalid Inputs</div>
+                        <div id="b-invalid" class="stat-number" style="color: var(--accent-rose);">0</div>
+                    </div>
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">High Confidence</div>
+                        <div id="b-highconf" class="stat-number" style="color: var(--accent-cyan);">0</div>
+                    </div>
+                </div>
+
+                <!-- Batch Results Data Table -->
+                <div class="spatial-card" style="margin-top: 1.5rem;">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Prediction</th>
+                                    <th>Confidence</th>
+                                    <th>Country</th>
+                                    <th>Origin</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batch-results-tbody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No batch file uploaded yet. Drop a CSV file above to begin.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 18. NAME EXPLORER VIEW -->
+            <div id="explorer-view" class="spatial-view">
+                <div class="section-header">
+                    <h2>Name Explorer Catalog</h2>
+                    <p>Discover popular, trending, traditional, and modern names across global origins.</p>
+                </div>
+
+                <div id="explorer-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem;">
+                    <!-- Explorer Cards dynamically injected by JS -->
+                </div>
+            </div>
+
+            <!-- 10. COMPARE NAMES VIEW -->
+            <div id="compare-view" class="spatial-view">
+                <div class="section-header">
+                    <h2>Compare Two Names</h2>
+                    <p>Evaluate phonetic, stylistic, and origin similarity metrics between any two names.</p>
+                </div>
+
+                <div class="spatial-card" style="max-width: 800px; margin: 0 auto;">
+                    <div class="compare-grid">
+                        <input type="text" id="compare-name-1" class="input-spatial" value="Adithya" placeholder="First Name">
+                        <div class="compare-connector">⚡</div>
+                        <input type="text" id="compare-name-2" class="input-spatial" value="Arjun" placeholder="Second Name">
+                    </div>
+
+                    <button id="btn-compare-names" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1.5rem;">
+                        <span>Compare Metrics</span>
+                    </button>
+
+                    <div id="comp-results-box" style="display: none; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
+                        <h4>Similarity Matrix Results</h4>
+                        
+                        <div class="probability-bars" style="margin-top: 1rem;">
+                            <div class="prob-row">
+                                <span class="prob-label" style="width: 140px;">Name Similarity</span>
+                                <div class="prob-bar-track"><div id="comp-val-sim" class="prob-bar-fill male" style="width: 86%;"></div></div>
+                                <span class="prob-val">86%</span>
+                            </div>
+                            <div class="prob-row">
+                                <span class="prob-label" style="width: 140px;">Pronunciation</span>
+                                <div class="prob-bar-track"><div id="comp-val-pron" class="prob-bar-fill female" style="width: 92%;"></div></div>
+                                <span class="prob-val">92%</span>
+                            </div>
+                            <div class="prob-row">
+                                <span class="prob-label" style="width: 140px;">Style & Origin</span>
+                                <div class="prob-bar-track"><div id="comp-val-style" class="prob-bar-fill male" style="width: 88%;"></div></div>
+                                <span class="prob-val">88%</span>
+                            </div>
+                        </div>
+
+                        <div class="disclaimer-box">
+                            <span>🎮</span>
+                            <span>Entertainment / similarity score: This comparison represents linguistic & stylistic metrics only, not scientific romantic compatibility.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 13. DASHBOARD & ANALYTICS VIEW -->
+            <div id="analytics-view" class="spatial-view">
+                <div class="section-header">
+                    <h2>Platform Dashboard & Analytics</h2>
+                    <p>Real-time telemetry and aggregated system performance stats.</p>
+                </div>
+
+                <div class="stats-cards-grid">
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Total Searches</div>
+                        <div id="dash-searches" class="stat-number">14,280</div>
+                    </div>
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Names Analyzed</div>
+                        <div id="dash-analyzed" class="stat-number" style="color: var(--accent-cyan);">12,482</div>
+                    </div>
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Avg Confidence</div>
+                        <div id="dash-confidence" class="stat-number" style="color: var(--accent-emerald);">91.4%</div>
+                    </div>
+                    <div class="spatial-card stat-metric-card">
+                        <div class="stat-label">Countries Covered</div>
+                        <div id="dash-countries" class="stat-number" style="color: var(--accent-purple);">67</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 14. SEARCH HISTORY VIEW -->
+            <div id="history-view" class="spatial-view">
+                <div class="section-header">
+                    <h2>Your Analysis History</h2>
+                    <p>Review and re-analyze past name queries saved locally.</p>
+                </div>
+
+                <div class="spatial-card">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Prediction</th>
+                                    <th>Confidence</th>
+                                    <th>Country</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12. API DEVELOPER PAGE -->
+            <div id="api-view" class="spatial-view">
+                <div class="section-header">
+                    <h2>Name Intelligence API Portal</h2>
+                    <p>Integrate real-time name prediction and intelligence into your applications.</p>
+                </div>
+
+                <div class="spatial-card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3>API Status</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">Endpoint: <code>POST /api/v1/predict</code></p>
+                        </div>
+                        <span class="result-gender-tag male">OPERATIONAL (99.99%)</span>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <label for="api-test-input" style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.4rem;">Test Name Query</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="text" id="api-test-input" class="input-spatial" value="Adithya" style="flex: 1;">
+                            <button id="btn-api-test-run" class="btn-primary">Execute Test</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>Response Inspector (JSON)</h4>
+                        <div class="code-inspector">
+                            <button id="btn-copy-api-code" class="btn-copy-code">Copy JSON</button>
+                            <pre id="api-response-json">{
+  "success": true,
+  "query": { "name": "Adithya", "country": "Global" },
+  "prediction": {
+    "associated_gender": "MALE",
+    "confidence_score": 97.0,
+    "probability_distribution": { "Male": 97.0, "Female": 2.0, "Unknown": 1.0 }
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer style="border-top: 1px solid var(--glass-border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: auto;">
+            <p>NameLens AI Platform © 2026 • AI-Powered Name Intelligence Service</p>
+        </footer>
+    </div>
+
+    <!-- PDF REPORT PREVIEW MODAL -->
+    <div id="export-modal" class="modal-overlay">
+        <div class="spatial-card modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1rem;">
+                <h3>NameLens AI — Executive Name Intelligence Report</h3>
+                <button id="btn-close-export-modal" class="icon-btn">✕</button>
+            </div>
+
+            <div style="line-height: 1.6;">
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Generated on: <span id="exp-date"></span></p>
+                <h2 id="exp-name" style="font-size: 2.2rem; color: var(--accent-cyan); margin-top: 0.5rem;">ADITHYA</h2>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Commonly Associated With:</strong> <span id="exp-prediction"></span></p>
+                    <p><strong>Confidence Score:</strong> <span id="exp-confidence"></span></p>
+                    <p><strong>Linguistic Origin:</strong> <span id="exp-origin"></span></p>
+                    <p><strong>Meaning:</strong> <span id="exp-meaning"></span></p>
+                </div>
+                <div class="disclaimer-box" style="margin-top: 1.5rem;">
+                    <span>⚖️</span>
+                    <span>Predictions are statistical associations based on name data and should not be interpreted as a person's actual gender identity.</span>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                <button id="btn-print-report" class="btn-primary">Print / Download PDF</button>
             </div>
         </div>
-
-        <div class="footer">
-            <p>Built with Flask & Machine Learning | Gender Classification Model</p>
-        </div>
     </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+        <ul class="mobile-nav-items">
+            <li><button class="active" data-view-target="home-view"><span>🏠</span><span>Home</span></button></li>
+            <li><button data-view-target="analyze-view"><span>🔍</span><span>Analyze</span></button></li>
+            <li><button data-view-target="explorer-view"><span>🌐</span><span>Explorer</span></button></li>
+            <li><button data-view-target="history-view"><span>📜</span><span>History</span></button></li>
+            <li><button data-view-target="api-view"><span>⚡</span><span>API</span></button></li>
+        </ul>
+    </nav>
+
+    <!-- Frontend Application Engine -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
