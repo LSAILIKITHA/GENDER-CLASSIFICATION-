@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Sparkles, ArrowRight, ShieldCheck, Zap, Layers, Database, Compass, 
-  BarChart2, Search, CheckCircle2, UserCheck, RefreshCw, Cpu, Globe, Award, HelpCircle, Code
+  BarChart2, Search, CheckCircle2, UserCheck, RefreshCw, Cpu, Globe, Award, HelpCircle, Code, Video
 } from 'lucide-react';
 
 export default function EntryScreen({ onStartAnalyzing, onOpenAuth, user }) {
@@ -358,20 +358,20 @@ export default function EntryScreen({ onStartAnalyzing, onOpenAuth, user }) {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           
           <div 
-            onClick={() => onStartAnalyzing('single')}
+            onClick={() => onStartAnalyzing('video')}
             className="bg-[#161B22] p-6 rounded-2xl border border-[#30363D] hover:border-[#C7ED3D] cursor-pointer group transition"
           >
             <div className="p-3.5 rounded-xl bg-[#21262D] text-[#C7ED3D] w-fit mb-4 group-hover:scale-105 transition">
-              <Sparkles className="w-6 h-6" />
+              <Video className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-[#F0F6FC] mb-2 font-['Outfit'] group-hover:text-[#C7ED3D] transition">
-              Single Predictor
+              Video Vision AI
             </h3>
             <p className="text-xs text-[#8B949E] leading-relaxed mb-4">
-              Enter any name for instant probability breakdown, character n-gram extraction, and confidence scores.
+              Upload videos or use live webcam to detect human faces, calculate male/female probabilities, and timeline charts.
             </p>
             <span className="text-xs font-semibold text-[#C7ED3D] flex items-center space-x-1">
-              <span>Open Predictor</span>
+              <span>Launch Video AI</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </span>
           </div>

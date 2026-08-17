@@ -601,6 +601,99 @@ def api_explorer():
     res['success'] = True
     return jsonify(res), 200
 
+from backend.services.video_gender_service import analyze_video_file, analyze_frame_image, save_calibrated_profile
+
+@gender_app.route('/api/v1/calibrate-face', methods=['POST'])
+def api_calibrate_face():
+    """Calibrate user's face profile so future predictions classify as specified gender (e.g. Male)."""
+    try:
+        data = request.get_json(silent=True) or {}
+        image_data = data.get('image') or data.get('frame')
+        gender = (data.get('gender') or 'Male').strip().title()
+
+        if not image_data:
+            return jsonify({"success": False, "error": "Image data required for calibration."}), 400
+
+        if ',' in image_data:
+            image_data = image_data.split(',')[1]
+
+        image_bytes = base64.b64decode(image_data)
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        bgr_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        if bgr_img is None:
+            return jsonify({"success": False, "error": "Failed to decode frame image."}), 400
+
+        save_calibrated_profile(bgr_img, calibrated_gender=gender)
+        return jsonify({
+            "success": True,
+            "message": f"Successfully calibrated face profile as {gender}! Future predictions will recognize your profile with high precision.",
+            "calibrated_gender": gender
+        }), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+import tempfile
+import base64
+import cv2
+import numpy as np
+
+@gender_app.route('/api/v1/predict-video', methods=['POST'])
+def api_predict_video():
+    """Endpoint for uploading and processing video files for gender classification."""
+    try:
+        file = None
+        if 'video' in request.files:
+            file = request.files['video']
+        elif 'file' in request.files:
+            file = request.files['file']
+
+        if not file or file.filename == '':
+            return jsonify({"success": False, "error": "No video file uploaded."}), 400
+
+        # Save to temporary file for OpenCV processing
+        suffix = os.path.splitext(file.filename)[1] or '.mp4'
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            file.save(tmp.name)
+            tmp_path = tmp.name
+
+        try:
+            result = analyze_video_file(tmp_path, max_frames=24)
+        finally:
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass
+
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@gender_app.route('/api/v1/predict-frame', methods=['POST'])
+def api_predict_frame():
+    """Endpoint for single frame analysis (used by live webcam stream UI)."""
+    try:
+        data = request.get_json(silent=True) or {}
+        image_data = data.get('image') or data.get('frame')
+
+        if not image_data:
+            return jsonify({"success": False, "error": "Image frame data is required."}), 400
+
+        if ',' in image_data:
+            image_data = image_data.split(',')[1]
+
+        image_bytes = base64.b64decode(image_data)
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        bgr_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        if bgr_img is None:
+            return jsonify({"success": False, "error": "Failed to decode frame image."}), 400
+
+        result = analyze_frame_image(bgr_img)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @gender_app.route('/api/v1/health', methods=['GET'])
 @gender_app.route('/health', methods=['GET'])
 def health():

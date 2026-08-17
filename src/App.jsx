@@ -12,6 +12,7 @@ import AiAssistant from './components/AiAssistant';
 import MlLabCombinedView from './components/MlLabCombinedView';
 import ApiMarketplace from './components/ApiMarketplace';
 import NameExplorer from './components/NameExplorer';
+import VideoPredictor from './components/VideoPredictor';
 
 export default function App() {
   const [viewMode, setViewMode] = useState('landing'); // 'landing' | 'app'
@@ -121,6 +122,7 @@ export default function App() {
         ) : (
           <div className="animate-fadeIn">
             {activeTab === 'single' && <SinglePredictor />}
+            {activeTab === 'video' && <VideoPredictor />}
             {activeTab === 'compare' && <NameComparison />}
             {activeTab === 'batch' && <BatchPredictor />}
             {activeTab === 'dataset' && <DatasetManager />}

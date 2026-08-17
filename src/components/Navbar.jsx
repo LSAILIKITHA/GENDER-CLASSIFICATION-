@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Sparkles, Activity, Layers, Compass, BarChart2, Database,
-  RefreshCw, Home, LogIn, User, LogOut, ChevronDown, ShieldCheck, Key, Cpu
+  RefreshCw, Home, LogIn, User, LogOut, ChevronDown, ShieldCheck, Key, Cpu, Video
 } from 'lucide-react';
 import logoImg from '../namelens_logo.png';
 
@@ -34,6 +34,7 @@ export default function Navbar({
 
   const tabs = [
     { id: 'single', label: 'Single Analysis', shortLabel: 'Single', icon: Sparkles },
+    { id: 'video', label: 'Video Predictor', shortLabel: 'Video AI', icon: Video },
     { id: 'compare', label: 'Compare Names', shortLabel: 'Compare', icon: Layers },
     { id: 'batch', label: 'Batch Classifier', shortLabel: 'Batch', icon: Activity },
     { id: 'explorer', label: 'Name Catalog', shortLabel: 'Catalog', icon: Compass },
