@@ -11,8 +11,10 @@ DB_PATH = "gender_classification.db"
 CSV_FALLBACK_PATH = "Names_dataset.csv"
 
 def get_db_connection():
-    """Returns a SQLite connection object with row factory for dict-like access."""
-    conn = sqlite3.connect(DB_PATH, timeout=10.0)
+    """Returns a SQLite connection object with row factory and WAL mode for concurrent access."""
+    conn = sqlite3.connect(DB_PATH, timeout=30.0)
+    conn.execute("PRAGMA journal_mode = WAL")
+    conn.execute("PRAGMA busy_timeout = 30000")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -96,14 +98,18 @@ def init_db():
         )
     """)
 
-    # Table 5: Email OTP Passcodes
+    # Table 6: API Keys Management (Hashed Secrets & Scopes)
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS email_otps (
+        CREATE TABLE IF NOT EXISTS api_keys (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            otp_code TEXT NOT NULL,
-            expires_at DATETIME NOT NULL,
-            verified INTEGER DEFAULT 0,
+            user_email TEXT NOT NULL,
+            key_name TEXT DEFAULT 'Default Key',
+            key_prefix TEXT NOT NULL,
+            key_hash TEXT UNIQUE NOT NULL,
+            environment TEXT DEFAULT 'production',
+            rate_limit INTEGER DEFAULT 1000,
+            usage_count INTEGER DEFAULT 0,
+            last_used_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -411,6 +417,84 @@ def verify_email_otp_db(email, otp_code):
     except Exception as e:
         print(f"Error verifying email OTP: {e}")
         return False
+
+import hashlib
+import secrets
+
+def create_user_api_key(email, key_name="Default Key", environment="production"):
+    """Generates a secure API key, stores SHA-256 hash in SQLite, and returns raw secret once."""
+    init_db()
+    raw_secret = f"nl_{environment[:4]}_" + secrets.token_hex(16)
+    key_hash = hashlib.sha256(raw_secret.encode()).hexdigest()
+    key_prefix = raw_secret[:12] + "..."
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO api_keys (user_email, key_name, key_prefix, key_hash, environment)
+        VALUES (?, ?, ?, ?, ?)
+    """, (email, key_name, key_prefix, key_hash, environment))
+    conn.commit()
+    conn.close()
+
+    return {
+        "raw_secret": raw_secret,
+        "key_prefix": key_prefix,
+        "key_name": key_name,
+        "environment": environment
+    }
+
+def get_user_api_keys(email):
+    """Retrieves all API keys registered for a user (without exposing raw secrets)."""
+    init_db()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, key_name, key_prefix, environment, rate_limit, usage_count, last_used_at, created_at FROM api_keys WHERE user_email = ? ORDER BY id DESC", (email,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    keys = []
+    for r in rows:
+        keys.append({
+            "id": r["id"],
+            "key_name": r["key_name"],
+            "key_prefix": r["key_prefix"],
+            "environment": r["environment"],
+            "rate_limit": r["rate_limit"],
+            "usage_count": r["usage_count"],
+            "last_used_at": r["last_used_at"],
+            "created_at": r["created_at"]
+        })
+    return keys
+
+def revoke_api_key(email, key_id):
+    """Revokes / deletes an API key."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM api_keys WHERE id = ? AND user_email = ?", (key_id, email))
+    deleted = cursor.rowcount > 0
+    conn.commit()
+    conn.close()
+    return deleted
+
+def verify_api_key_header(raw_secret):
+    """Verifies raw API key secret against SHA-256 database hashes and increments usage."""
+    if not raw_secret:
+        return False, None
+    key_hash = hashlib.sha256(raw_secret.strip().encode()).hexdigest()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, user_email, rate_limit, usage_count FROM api_keys WHERE key_hash = ?", (key_hash,))
+    row = cursor.fetchone()
+
+    if row:
+        cursor.execute("UPDATE api_keys SET usage_count = usage_count + 1, last_used_at = CURRENT_TIMESTAMP WHERE id = ?", (row['id'],))
+        conn.commit()
+        conn.close()
+        return True, dict(row)
+
+    conn.close()
+    return False, None
 
 if __name__ == '__main__':
     print("Testing SQLite database initialization...")

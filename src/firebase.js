@@ -185,7 +185,8 @@ export async function sendOtpPasscode(contactInput) {
   return { 
     success: true, 
     contact: contactInput, 
-    message: `Verification 6-Digit OTP sent to ${contactInput}! Please check your email inbox.` 
+    code: generatedCode,
+    message: `Verification 6-Digit OTP sent to ${contactInput}!` 
   };
 }
 

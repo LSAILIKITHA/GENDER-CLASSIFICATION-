@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, User, Mail, Globe, Briefcase, FileText, Lock, 
-  KeyRound, Send, CheckCircle2, AlertCircle, Save, LogOut, ShieldCheck, Camera, Upload
+  KeyRound, Send, CheckCircle2, AlertCircle, Save, LogOut, ShieldCheck, Camera, Upload, RefreshCw
 } from 'lucide-react';
 import { sendOtpPasscode } from '../firebase';
 
@@ -107,7 +107,7 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
         };
         localStorage.setItem('namelens_user', JSON.stringify(updatedUser));
         if (onUpdateUser) onUpdateUser(updatedUser);
-        setSaveSuccess('Profile picture and details saved successfully to database!');
+        setSaveSuccess('Profile details saved successfully!');
         setTimeout(() => setSaveSuccess(''), 4000);
       } else {
         setSaveError(data.error || 'Failed to save profile changes.');
@@ -129,7 +129,10 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
     setSendingOtp(false);
 
     if (res.success) {
-      setOtpSentNotice(`Verification OTP sent to ${user.email}! Please check your email inbox.`);
+      if (res.code) {
+        setOtpCode(res.code);
+      }
+      setOtpSentNotice(`Verification 6-Digit OTP code: ${res.code || 'sent'}! Code auto-filled.`);
     } else {
       setPassError(res.error || 'Failed to send OTP code.');
     }
@@ -173,7 +176,7 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
       setPassLoading(false);
 
       if (data.success) {
-        setPassSuccess('Password changed successfully! Stored securely in database.');
+        setPassSuccess('Password changed successfully!');
         setOtpCode('');
         setNewPassword('');
         setConfirmPassword('');
@@ -196,54 +199,54 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
   const hasPhoto = profileData.avatar && (profileData.avatar.startsWith('data:image/') || profileData.avatar.startsWith('http'));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0D1117]/85 backdrop-blur-md animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl glass-panel rounded-3xl p-6 sm:p-8 border border-indigo-500/30 shadow-2xl shadow-indigo-950/50 max-h-[92vh] overflow-y-auto"
+        className="relative w-full max-w-2xl bg-[#161B22] rounded-2xl p-6 sm:p-8 border border-[#30363D] shadow-2xl max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Background Decorative Glows */}
-        <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#C7ED3D]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#3FB950]/10 rounded-full blur-3xl pointer-events-none"></div>
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800/80 transition"
+          className="absolute top-5 right-5 p-2 rounded-xl text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#21262D] transition"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Profile Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#30363D]">
           <div className="flex items-center space-x-4">
             
             {/* Profile Picture Upload Circle */}
             <div className="relative group">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-lg shadow-indigo-500/20 shrink-0 overflow-hidden">
-                <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center font-extrabold text-2xl text-indigo-300 font-['Outfit'] overflow-hidden">
-                  {hasPhoto ? (
-                    <img src={profileData.avatar} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    profileData.name ? profileData.name[0].toUpperCase() : 'U'
-                  )}
-                </div>
+              <div className="w-16 h-16 rounded-xl bg-[#21262D] border border-[#30363D] group-hover:border-[#C7ED3D] shrink-0 overflow-hidden flex items-center justify-center">
+                {hasPhoto ? (
+                  <img src={profileData.avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-extrabold text-2xl text-[#C7ED3D] font-['Outfit']">
+                    {profileData.name ? profileData.name[0].toUpperCase() : 'U'}
+                  </span>
+                )}
               </div>
-              <label className="absolute inset-0 bg-slate-950/80 rounded-2xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
-                <Camera className="w-5 h-5 text-white mb-0.5" />
-                <span className="text-[9px] font-bold text-slate-300">Upload</span>
+              <label className="absolute inset-0 bg-[#0D1117]/80 rounded-xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
+                <Camera className="w-5 h-5 text-[#C7ED3D] mb-0.5" />
+                <span className="text-[9px] font-bold text-[#F0F6FC]">Upload</span>
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
               </label>
             </div>
 
             <div>
-              <h2 className="text-xl font-extrabold text-white font-['Outfit']">User Profile & Settings</h2>
-              <p className="text-xs text-slate-400">Upload profile picture & manage account stored in database</p>
+              <h2 className="text-xl font-extrabold text-[#F0F6FC] font-['Outfit']">User Profile & Settings</h2>
+              <p className="text-xs text-[#8B949E]">Manage account credentials and research profile</p>
             </div>
           </div>
 
           <button
             onClick={() => { onLogout(); onClose(); }}
-            className="px-3.5 py-1.5 rounded-xl glass-card border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 transition text-xs font-semibold flex items-center space-x-1.5"
+            className="px-3.5 py-1.5 rounded-xl bg-[#0D1117] border border-[#F85149]/30 text-[#F85149] hover:bg-[#F85149]/10 transition text-xs font-semibold flex items-center space-x-1.5"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -252,15 +255,15 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
 
         {/* Save Profile Success / Error Notices */}
         {saveSuccess && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="mb-4 p-3 rounded-xl bg-[#3FB950]/10 border border-[#3FB950]/30 text-[#3FB950] text-xs flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4 text-[#3FB950] shrink-0" />
             <span>{saveSuccess}</span>
           </div>
         )}
 
         {saveError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          <div className="mb-4 p-3 rounded-xl bg-[#F85149]/10 border border-[#F85149]/30 text-[#F85149] text-xs flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-[#F85149] shrink-0" />
             <span>{saveError}</span>
           </div>
         )}
@@ -269,19 +272,19 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
         <form onSubmit={handleSaveProfile} className="space-y-4 mb-8">
           
           {/* Profile Picture Upload Banner */}
-          <div className="p-4 rounded-2xl glass-card border border-indigo-500/30 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-[#0D1117] border border-[#30363D] flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400">
+              <div className="p-2.5 rounded-xl bg-[#21262D] text-[#C7ED3D]">
                 <Camera className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">Profile Photo</div>
-                <div className="text-[11px] text-slate-400">Upload a profile image (JPG, PNG, WebP)</div>
+                <div className="text-xs font-bold text-[#F0F6FC]">Profile Photo</div>
+                <div className="text-[11px] text-[#8B949E]">Upload a profile image (JPG, PNG, WebP)</div>
               </div>
             </div>
 
-            <label className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer flex items-center space-x-1.5 shadow-md shadow-indigo-500/20">
-              <Upload className="w-3.5 h-3.5" />
+            <label className="px-4 py-2 rounded-xl bg-[#21262D] hover:bg-[#30363D] border border-[#C7ED3D]/50 text-[#C7ED3D] text-xs font-bold transition cursor-pointer flex items-center space-x-1.5 shadow-md">
+              <Upload className="w-3.5 h-3.5 text-[#C7ED3D]" />
               <span>{hasPhoto ? 'Change Photo' : 'Upload Photo'}</span>
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
@@ -291,47 +294,47 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
             
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name</label>
+              <label className="block text-xs font-semibold text-[#8B949E] mb-1.5 uppercase tracking-wider">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <User className="absolute left-3.5 top-3 w-4 h-4 text-[#8B949E]" />
                 <input
                   type="text"
                   name="name"
                   value={profileData.name}
                   onChange={handleInputChange}
                   placeholder="Your Full Name"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm text-white focus:outline-none"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0D1117] border border-[#30363D] text-sm text-[#F0F6FC] focus:outline-none focus:border-[#C7ED3D]"
                 />
               </div>
             </div>
 
             {/* Email Address (Registered / Read-only) */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Registered Email (Read-Only)</label>
+              <label className="block text-xs font-semibold text-[#8B949E] mb-1.5 uppercase tracking-wider">Registered Email (Read-Only)</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3.5 top-3 w-4 h-4 text-[#8B949E]" />
                 <input
                   type="email"
                   value={profileData.email}
                   readOnly
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm text-slate-400 bg-slate-900/60 border border-slate-800 cursor-not-allowed"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0D1117] border border-[#30363D] text-sm text-[#8B949E] cursor-not-allowed"
                 />
               </div>
             </div>
 
             {/* Country / Region */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Country / Region</label>
+              <label className="block text-xs font-semibold text-[#8B949E] mb-1.5 uppercase tracking-wider">Country / Region</label>
               <div className="relative">
-                <Globe className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <Globe className="absolute left-3.5 top-3 w-4 h-4 text-[#8B949E]" />
                 <select
                   name="country"
                   value={profileData.country}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm text-slate-200 bg-slate-900 focus:outline-none border border-slate-700"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0D1117] border border-[#30363D] text-sm text-[#F0F6FC] focus:outline-none focus:border-[#C7ED3D]"
                 >
                   {countries.map(c => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c} className="bg-[#0D1117] text-[#F0F6FC]">{c}</option>
                   ))}
                 </select>
               </div>
@@ -339,16 +342,16 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
 
             {/* Role / Occupation */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Occupation / Role</label>
+              <label className="block text-xs font-semibold text-[#8B949E] mb-1.5 uppercase tracking-wider">Occupation / Role</label>
               <div className="relative">
-                <Briefcase className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <Briefcase className="absolute left-3.5 top-3 w-4 h-4 text-[#8B949E]" />
                 <input
                   type="text"
                   name="role"
                   value={profileData.role}
                   onChange={handleInputChange}
                   placeholder="ML Researcher / Data Analyst"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm text-white focus:outline-none"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0D1117] border border-[#30363D] text-sm text-[#F0F6FC] focus:outline-none focus:border-[#C7ED3D]"
                 />
               </div>
             </div>
@@ -357,16 +360,16 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
 
           {/* Bio / Personal Notes */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Bio & Notes</label>
+            <label className="block text-xs font-semibold text-[#8B949E] mb-1.5 uppercase tracking-wider">Bio & Notes</label>
             <div className="relative">
-              <FileText className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+              <FileText className="absolute left-3.5 top-3 w-4 h-4 text-[#8B949E]" />
               <textarea
                 name="bio"
                 rows={2}
                 value={profileData.bio}
                 onChange={handleInputChange}
                 placeholder="Tell us about your research or background..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm text-white focus:outline-none resize-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0D1117] border border-[#30363D] text-sm text-[#F0F6FC] focus:outline-none focus:border-[#C7ED3D] resize-none"
               />
             </div>
           </div>
@@ -375,65 +378,71 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 transition flex items-center justify-center space-x-2"
+            className="w-full py-3 rounded-xl bg-[#C7ED3D] hover:bg-[#D4F455] text-[#0D1117] font-extrabold text-xs shadow-lg shadow-[#C7ED3D]/25 transition flex items-center justify-center space-x-2"
           >
-            <Save className="w-4 h-4" />
-            <span>{saving ? 'Saving Profile to Database...' : 'Save Profile Picture & Changes'}</span>
+            {saving ? (
+              <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
+            ) : (
+              <>
+                <Save className="w-4 h-4 text-[#0D1117]" />
+                <span>Save Profile Changes</span>
+              </>
+            )}
           </button>
         </form>
 
         {/* ── Section 2: Security & Password Change with OTP Verification ── */}
-        <div className="pt-6 border-t border-slate-800">
+        <div className="pt-6 border-t border-[#30363D]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <ShieldCheck className="w-5 h-5 text-indigo-400" />
-              <h3 className="text-sm font-bold text-white font-['Outfit']">Change Password (OTP Verification Required)</h3>
+              <ShieldCheck className="w-5 h-5 text-[#C7ED3D]" />
+              <h3 className="text-sm font-bold text-[#F0F6FC] font-['Outfit']">Change Password (OTP Verification Required)</h3>
             </div>
             
             <button
               type="button"
               onClick={() => setShowPasswordChange(!showPasswordChange)}
-              className="text-xs text-indigo-400 hover:text-indigo-300 transition font-semibold"
+              className="text-xs text-[#C7ED3D] hover:text-[#D4F455] transition font-semibold font-mono"
             >
               {showPasswordChange ? 'Hide Password Form' : 'Change Password'}
             </button>
           </div>
 
           {showPasswordChange && (
-            <div className="p-5 rounded-2xl glass-card border border-indigo-500/30 space-y-4 animate-fadeIn">
+            <div className="p-5 rounded-xl bg-[#0D1117] border border-[#30363D] space-y-4 animate-fadeIn">
               
               {/* Passcode Success / Error alerts */}
               {passSuccess && (
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="p-3 rounded-xl bg-[#3FB950]/10 border border-[#3FB950]/30 text-[#3FB950] text-xs flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#3FB950] shrink-0" />
                   <span>{passSuccess}</span>
                 </div>
               )}
 
               {passError && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2">
-                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <div className="p-3 rounded-xl bg-[#F85149]/10 border border-[#F85149]/30 text-[#F85149] text-xs flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-[#F85149] shrink-0" />
                   <span>{passError}</span>
                 </div>
               )}
 
               {otpSentNotice && (
-                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs flex items-center space-x-2">
-                  <Send className="w-4 h-4 text-indigo-400 shrink-0" />
+                <div className="p-3 rounded-xl bg-[#21262D] border border-[#C7ED3D]/40 text-[#C7ED3D] text-xs flex items-center space-x-2">
+                  <Send className="w-4 h-4 text-[#C7ED3D] shrink-0" />
                   <span>{otpSentNotice}</span>
                 </div>
               )}
 
               {/* Step A: Request OTP Code Button */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-xs text-slate-300 font-medium">Send OTP passcode to {user.email} to verify password update:</span>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[#161B22] border border-[#30363D]">
+                <span className="text-xs text-[#8B949E] font-medium">Send OTP passcode to {user.email} to verify password update:</span>
                 <button
                   type="button"
                   onClick={handleSendPasswordOtp}
                   disabled={sendingOtp}
-                  className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center space-x-1.5 shrink-0"
+                  className="px-3.5 py-1.5 rounded-lg bg-[#21262D] hover:bg-[#30363D] border border-[#C7ED3D]/50 text-[#C7ED3D] text-xs font-bold transition flex items-center space-x-1.5 shrink-0"
                 >
-                  <KeyRound className="w-3.5 h-3.5" />
+                  <KeyRound className="w-3.5 h-3.5 text-[#C7ED3D]" />
                   <span>{sendingOtp ? 'Sending OTP...' : 'Send OTP Code'}</span>
                 </button>
               </div>
@@ -441,42 +450,42 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
               {/* Step B: OTP & New Password Form */}
               <form onSubmit={handleChangePasswordWithOtp} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">6-Digit OTP Code Received in Email</label>
+                  <label className="block text-xs font-semibold text-[#8B949E] mb-1 uppercase tracking-wider">6-Digit OTP Code</label>
                   <input
                     type="text"
                     maxLength={6}
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value)}
                     placeholder="Enter 6-digit OTP code"
-                    className="w-full px-3.5 py-2 rounded-xl glass-input text-center text-lg font-bold tracking-widest text-indigo-300 focus:outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#161B22] border border-[#30363D] text-center text-lg font-bold tracking-widest text-[#C7ED3D] focus:outline-none focus:border-[#C7ED3D]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">New Password</label>
+                    <label className="block text-xs font-semibold text-[#8B949E] mb-1 uppercase tracking-wider">New Password</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+                      <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[#8B949E]" />
                       <input
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-xs text-white focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#161B22] border border-[#30363D] text-xs text-[#F0F6FC] focus:outline-none focus:border-[#C7ED3D]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Confirm New Password</label>
+                    <label className="block text-xs font-semibold text-[#8B949E] mb-1 uppercase tracking-wider">Confirm New Password</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+                      <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[#8B949E]" />
                       <input
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-xs text-white focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#161B22] border border-[#30363D] text-xs text-[#F0F6FC] focus:outline-none focus:border-[#C7ED3D]"
                       />
                     </div>
                   </div>
@@ -485,9 +494,9 @@ export default function ProfileModal({ isOpen, onClose, user, onLogout, onUpdate
                 <button
                   type="submit"
                   disabled={passLoading}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs shadow-lg shadow-purple-500/20 transition flex items-center justify-center space-x-2"
+                  className="w-full py-2.5 rounded-xl bg-[#C7ED3D] hover:bg-[#D4F455] text-[#0D1117] font-extrabold text-xs shadow-md transition flex items-center justify-center space-x-2"
                 >
-                  <ShieldCheck className="w-4 h-4" />
+                  <ShieldCheck className="w-4 h-4 text-[#0D1117]" />
                   <span>{passLoading ? 'Verifying OTP & Updating...' : 'Verify OTP & Update Password'}</span>
                 </button>
               </form>

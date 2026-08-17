@@ -136,66 +136,62 @@ export default function DatasetManager() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8 animate-fadeIn">
       
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
-          <Database className="w-3.5 h-3.5" />
-          <span>Dataset Expansion & Accuracy Pipeline</span>
-        </div>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-['Outfit']">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F0F6FC] tracking-tight font-['Outfit']">
           Dataset & Retraining Manager
         </h2>
-        <p className="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
-          Add new training samples to <code className="text-indigo-300">Names_dataset.csv</code> and retrain the character n-gram ML model on demand to boost accuracy.
+        <p className="text-[#8B949E] max-w-xl mx-auto text-sm sm:text-base">
+          Add new training samples to ground truth datasets and retrain the character n-gram ML model on demand.
         </p>
       </div>
 
       {/* Dataset Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-          <span className="text-xs uppercase font-bold text-slate-400">Total Dataset Names</span>
-          <p className="text-3xl font-black text-white">{stats ? stats.total_records.toLocaleString() : '108,908'}</p>
-          <span className="text-[10px] text-emerald-400 font-semibold">Indexed Ground Truth</span>
+        <div className="bg-[#161B22] p-5 rounded-2xl border border-[#30363D] space-y-2">
+          <span className="text-xs uppercase font-bold text-[#8B949E]">Total Dataset Names</span>
+          <p className="text-3xl font-black text-[#F0F6FC] font-mono">{stats ? stats.total_records.toLocaleString() : '108,908'}</p>
+          <span className="text-[10px] text-[#3FB950] font-semibold">Indexed Ground Truth</span>
         </div>
 
-        <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-          <span className="text-xs uppercase font-bold text-slate-400">Female Names</span>
-          <p className="text-3xl font-black text-pink-400">{stats ? stats.female_count.toLocaleString() : '66,533'}</p>
-          <span className="text-[10px] text-slate-400 font-semibold">
+        <div className="bg-[#161B22] p-5 rounded-2xl border border-[#30363D] space-y-2">
+          <span className="text-xs uppercase font-bold text-[#8B949E]">Female Names</span>
+          <p className="text-3xl font-black text-[#F778BA] font-mono">{stats ? stats.female_count.toLocaleString() : '66,533'}</p>
+          <span className="text-[10px] text-[#8B949E] font-semibold font-mono">
             {stats ? roundPct(stats.female_count, stats.total_records) : '61.1'}% of dataset
           </span>
         </div>
 
-        <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-          <span className="text-xs uppercase font-bold text-slate-400">Male Names</span>
-          <p className="text-3xl font-black text-blue-400">{stats ? stats.male_count.toLocaleString() : '42,375'}</p>
-          <span className="text-[10px] text-slate-400 font-semibold">
+        <div className="bg-[#161B22] p-5 rounded-2xl border border-[#30363D] space-y-2">
+          <span className="text-xs uppercase font-bold text-[#8B949E]">Male Names</span>
+          <p className="text-3xl font-black text-[#58A6FF] font-mono">{stats ? stats.male_count.toLocaleString() : '42,375'}</p>
+          <span className="text-[10px] text-[#8B949E] font-semibold font-mono">
             {stats ? roundPct(stats.male_count, stats.total_records) : '38.9'}% of dataset
           </span>
         </div>
 
-        <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-          <span className="text-xs uppercase font-bold text-slate-400">Model Accuracy</span>
-          <p className="text-3xl font-black text-emerald-400">{stats ? stats.model_accuracy : '87.46'}%</p>
-          <span className="text-[10px] text-indigo-300 font-semibold">Char N-Gram (2-5) + MNB</span>
+        <div className="bg-[#161B22] p-5 rounded-2xl border border-[#30363D] space-y-2">
+          <span className="text-xs uppercase font-bold text-[#8B949E]">Model Accuracy</span>
+          <p className="text-3xl font-black text-[#C7ED3D] font-mono">{stats ? stats.model_accuracy : '87.46'}%</p>
+          <span className="text-[10px] text-[#C7ED3D] font-semibold">Char N-Gram (2-5) + MNB</span>
         </div>
 
       </div>
 
       {/* Alert Banners */}
       {message && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center space-x-3">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+        <div className="p-4 rounded-xl bg-[#3FB950]/10 border border-[#3FB950]/30 text-[#3FB950] text-sm flex items-center space-x-3">
+          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-[#3FB950]" />
           <span>{message}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex items-center space-x-3">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-400" />
+        <div className="p-4 rounded-xl bg-[#F85149]/10 border border-[#F85149]/30 text-[#F85149] text-sm flex items-center space-x-3">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-[#F85149]" />
           <span>{error}</span>
         </div>
       )}
@@ -204,15 +200,15 @@ export default function DatasetManager() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Single Name Add Form */}
-        <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-          <div className="flex items-center space-x-2 text-indigo-400 font-bold text-sm">
+        <div className="bg-[#161B22] p-6 rounded-2xl border border-[#30363D] space-y-4">
+          <div className="flex items-center space-x-2 text-[#C7ED3D] font-bold text-sm">
             <PlusCircle className="w-4 h-4" />
             <span>Add Single Name Entry</span>
           </div>
 
           <form onSubmit={handleAddSingle} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#8B949E] uppercase tracking-wider mb-2">
                 Name
               </label>
               <input
@@ -220,18 +216,18 @@ export default function DatasetManager() {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g. Likitha, Siddharth, Ananya..."
-                className="w-full glass-input px-4 py-3 rounded-2xl text-white text-sm"
+                className="w-full bg-[#0D1117] border border-[#30363D] px-4 py-3 rounded-xl text-[#F0F6FC] text-sm focus:outline-none focus:border-[#C7ED3D]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#8B949E] uppercase tracking-wider mb-2">
                 Gender Classification
               </label>
               <select
                 value={newGender}
                 onChange={(e) => setNewGender(e.target.value)}
-                className="w-full glass-input px-4 py-3 rounded-2xl text-white text-sm bg-slate-900"
+                className="w-full bg-[#0D1117] border border-[#30363D] px-4 py-3 rounded-xl text-[#F0F6FC] text-sm focus:outline-none focus:border-[#C7ED3D]"
               >
                 <option value="f">Female (f)</option>
                 <option value="m">Male (m)</option>
@@ -241,16 +237,16 @@ export default function DatasetManager() {
             <button
               type="submit"
               disabled={processing || retraining}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center space-x-2 shadow-lg transition"
+              className="w-full py-3 rounded-xl bg-[#C7ED3D] hover:bg-[#D4F455] text-[#0D1117] font-extrabold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-[#C7ED3D]/25 transition"
             >
               {processing ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#0D1117]" />
                   <span>Retraining Model...</span>
                 </>
               ) : (
                 <>
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-4 h-4 text-[#0D1117]" />
                   <span>Add Name & Retrain Model</span>
                 </>
               )}
@@ -259,15 +255,15 @@ export default function DatasetManager() {
         </div>
 
         {/* Bulk Names Add Form */}
-        <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-          <div className="flex items-center space-x-2 text-purple-400 font-bold text-sm">
+        <div className="bg-[#161B22] p-6 rounded-2xl border border-[#30363D] space-y-4">
+          <div className="flex items-center space-x-2 text-[#C7ED3D] font-bold text-sm">
             <Layers className="w-4 h-4" />
             <span>Batch Add Names</span>
           </div>
 
           <form onSubmit={handleAddBulk} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#8B949E] uppercase tracking-wider mb-2">
                 Paste Multiple Names (One per line or comma-separated)
               </label>
               <textarea
@@ -275,18 +271,18 @@ export default function DatasetManager() {
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
                 placeholder={`Aarav\nIshan\nVihaan...`}
-                className="w-full glass-input p-3 rounded-2xl text-white text-xs font-mono"
+                className="w-full bg-[#0D1117] border border-[#30363D] p-3 rounded-xl text-[#F0F6FC] text-xs font-mono focus:outline-none focus:border-[#C7ED3D]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#8B949E] uppercase tracking-wider mb-2">
                 Gender Classification for Batch
               </label>
               <select
                 value={bulkGender}
                 onChange={(e) => setBulkGender(e.target.value)}
-                className="w-full glass-input px-4 py-3 rounded-2xl text-white text-sm bg-slate-900"
+                className="w-full bg-[#0D1117] border border-[#30363D] px-4 py-3 rounded-xl text-[#F0F6FC] text-sm focus:outline-none focus:border-[#C7ED3D]"
               >
                 <option value="f">Female (f)</option>
                 <option value="m">Male (m)</option>
@@ -296,16 +292,16 @@ export default function DatasetManager() {
             <button
               type="submit"
               disabled={processing || retraining}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm flex items-center justify-center space-x-2 shadow-lg transition"
+              className="w-full py-3 rounded-xl bg-[#21262D] hover:bg-[#30363D] border border-[#C7ED3D]/50 text-[#C7ED3D] font-bold text-sm flex items-center justify-center space-x-2 shadow-md transition"
             >
               {processing ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#C7ED3D]" />
                   <span>Retraining Model...</span>
                 </>
               ) : (
                 <>
-                  <Layers className="w-4 h-4" />
+                  <Layers className="w-4 h-4 text-[#C7ED3D]" />
                   <span>Batch Add & Retrain Model</span>
                 </>
               )}
@@ -316,18 +312,18 @@ export default function DatasetManager() {
       </div>
 
       {/* Manual Retrain Banner */}
-      <div className="glass-panel p-6 rounded-3xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-[#161B22] p-6 rounded-2xl border border-[#30363D] flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h4 className="text-white font-bold text-base font-['Outfit']">Force Retrain ML Model</h4>
-          <p className="text-slate-400 text-xs">
-            Re-scans <code className="text-indigo-300">Names_dataset.csv</code>, fits character 2-5 n-grams, evaluates test accuracy, and hot-reloads model weights.
+          <h4 className="text-[#F0F6FC] font-bold text-base font-['Outfit']">Force Retrain ML Model</h4>
+          <p className="text-[#8B949E] text-xs">
+            Re-scans dataset ground truth, fits character 2-5 n-grams, evaluates test accuracy, and hot-reloads model weights.
           </p>
         </div>
 
         <button
           onClick={handleManualRetrain}
           disabled={retraining || processing}
-          className="px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm flex items-center space-x-2 shadow-lg shadow-emerald-600/20 transition whitespace-nowrap"
+          className="px-6 py-3 rounded-xl bg-[#21262D] hover:bg-[#30363D] border border-[#3FB950]/40 text-[#3FB950] font-bold text-sm flex items-center space-x-2 shadow-md transition whitespace-nowrap"
         >
           <RefreshCw className={`w-4 h-4 ${retraining ? 'animate-spin' : ''}`} />
           <span>{retraining ? 'Retraining...' : 'Re-run Retrain Pipeline'}</span>

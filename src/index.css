@@ -4,108 +4,120 @@
 
 @layer base {
   :root {
-    --bg-primary: #070b14;
-    --bg-card: rgba(15, 23, 42, 0.75);
-    --border-card: rgba(255, 255, 255, 0.08);
+    --bg-primary: #0D1117;
+    --bg-surface: #161B22;
+    --bg-surface-2: #21262D;
+    --bg-surface-3: #30363D;
+    --border-card: #30363D;
+    --text-primary: #F0F6FC;
+    --text-muted: #8B949E;
+    --accent-color: #C7ED3D;
+    --success-color: #3FB950;
   }
 }
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: var(--bg-primary);
+  background-color: #0D1117;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(199, 237, 61, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(63, 185, 80, 0.06) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(199, 237, 61, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(88, 166, 255, 0.04) 0px, transparent 50%);
   background-attachment: fixed;
   min-height: 100vh;
-  color: #f8fafc;
+  color: #F0F6FC;
 }
 
-/* Glassmorphism containers */
+/* Glassmorphism containers with Developer Intelligence #C7ED3D theme */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(22, 27, 34, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #30363D;
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.45);
+  background: rgba(22, 27, 34, 0.75);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #30363D;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.25);
-  transform: translateY(-3px);
+  border-color: #C7ED3D;
+  box-shadow: 0 8px 24px -4px rgba(199, 237, 61, 0.2);
+  transform: translateY(-2px);
 }
 
 .glass-card-accent {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(33, 38, 45, 0.85) 0%, rgba(22, 27, 34, 0.95) 100%);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(129, 140, 248, 0.2);
+  border: 1px solid rgba(199, 237, 61, 0.4);
+}
+
+.glass-card-secondary {
+  background: #21262D;
+  border: 1px solid #30363D;
 }
 
 .glass-input {
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0D1117;
+  border: 1px solid #30363D;
+  color: #F0F6FC;
   transition: all 0.2s ease;
 }
 
 .glass-input:focus {
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+  border-color: #C7ED3D;
+  box-shadow: 0 0 0 3px rgba(199, 237, 61, 0.25);
   outline: none;
 }
 
 /* Glowing text and borders */
 .text-gradient {
-  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+  background: linear-gradient(135deg, #C7ED3D 0%, #D4F455 50%, #3FB950 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient-cyan {
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+.text-gradient-accent {
+  background: linear-gradient(135deg, #C7ED3D 0%, #58A6FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.glow-indigo {
-  box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.5);
+.glow-accent {
+  box-shadow: 0 0 30px -5px rgba(199, 237, 61, 0.4);
 }
 
-.glow-pink {
-  box-shadow: 0 0 40px -10px rgba(236, 72, 153, 0.5);
+.glow-success {
+  box-shadow: 0 0 30px -5px rgba(63, 185, 80, 0.35);
 }
 
-/* Custom scrollbars */
+/* Custom developer scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: #0D1117;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.4);
+  background: #30363D;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.7);
+  background: #C7ED3D;
 }
 
 /* Pulse animation for AI glow */
 @keyframes pulseGlow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.04); }
 }
 
 .animate-glow {
@@ -114,28 +126,28 @@ body {
 
 /* Fade-in animation for result sections */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* Slide-up for cards */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .animate-slideUp {
-  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* Floating badge animation */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%       { transform: translateY(-8px) rotate(1deg); }
+  50%       { transform: translateY(-6px) rotate(0.5deg); }
 }
 
 .animate-float {
@@ -144,7 +156,7 @@ body {
 
 @keyframes floatSlow {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%       { transform: translateY(-12px) rotate(-1.5deg); }
+  50%       { transform: translateY(-10px) rotate(-1deg); }
 }
 
 .animate-float-slow {
@@ -158,7 +170,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, rgba(30,41,59,0.5) 25%, rgba(51,65,85,0.5) 50%, rgba(30,41,59,0.5) 75%);
+  background: linear-gradient(90deg, #161B22 25%, #21262D 50%, #161B22 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite;
   border-radius: 0.5rem;
