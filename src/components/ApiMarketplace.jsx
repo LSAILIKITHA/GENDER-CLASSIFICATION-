@@ -6,7 +6,7 @@ import {
   BarChart2, X, AlertCircle, ExternalLink, CheckCircle
 } from 'lucide-react';
 
-const RAZORPAY_KEY_ID = 'rzp_test_SyNzKxp1QgzrTy';
+const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SyNzKxp1QgzrTy';
 
 export default function ApiMarketplace({ user, onOpenAuth }) {
   // Saved API Keys State
